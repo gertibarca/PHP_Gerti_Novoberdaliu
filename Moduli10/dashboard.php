@@ -39,37 +39,82 @@
             width: 60px;
             text-align: center;
         }
+
+        .actions a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: #4a90e2;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .add-btn {
+            display: block;
+            width: 120px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            background: #4a90e2;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .add-btn:hover {
+            background: #357abd;
+        }
     </style>
 </head>
 <body>
 
 <?php
 include_once("config.php");
+
 $sql = "SELECT * FROM users";
 $getUsers = $conn->prepare($sql);
 $getUsers->execute();
-$users = $getUsers->fetchAll();
+$users = $getUsers->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <table>
     <thead>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Surname</th>
-        <th>Email</th>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
     </thead>
 
     <tbody>
-        <?php foreach ($users as $user) { ?>
+        <?php if (count($users) > 0): ?>
+            <?php foreach ($users as $user): ?>
+                <tr>
+                    <td><?= htmlspecialchars($user['id']) ?></td>
+                    <td><?= htmlspecialchars($user['name']) ?></td>
+                    <td><?= htmlspecialchars($user['surname']) ?></td>
+                    <td><?= htmlspecialchars($user['email']) ?></td>
+                    <td class="actions">
+                        <a href="edit.php?id=<?= $user['id'] ?>">Update</a>
+                        <a href="delete.php?id=<?= $user['id'] ?>"
+                           onclick="return confirm('Are you sure you want to delete this user?');">
+                           Delete
+                        </a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
             <tr>
-                <td><?= $user['id'] ?></td>
-                <td><?= $user['name'] ?></td>
-                <td><?= $user['surname'] ?></td>
-                <td><?= $user['email'] ?></td>
+                <td colspan="5" style="text-align:center;">No users found</td>
             </tr>
-        <?php } ?>
+        <?php endif; ?>
     </tbody>
 </table>
-<a href="add.php">Add</a>
+
+<a href="add.php" class="add-btn">Add User</a>
+
 </body>
 </html>
